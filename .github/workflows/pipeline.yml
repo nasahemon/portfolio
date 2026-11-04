@@ -81,7 +81,7 @@ jobs:
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: bash scripts/smoke-test.sh "${{ steps.deploy.outputs.url }}"
       - name: Comment preview URL on the PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.createComment({
