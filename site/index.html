@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hasibul Hasan Emon · DevOps / Platform Engineer</title>
+    <meta
+      name="description"
+      content="Platform engineer with a full-stack background. I build and run secure, cost-efficient AWS platforms on Kubernetes and Terraform for regulated healthcare."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://hasanemon.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Hasibul Hasan Emon · DevOps / Platform Engineer" />
+    <meta
+      property="og:description"
+      content="I build and run secure, cost-efficient AWS platforms on Kubernetes and Terraform."
+    />
+    <meta property="og:image" content="/assets/og-image.png" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav">
+      <div class="container nav__inner">
+        <a class="nav__brand" href="#top" aria-label="Home">HE<span>.</span></a>
+        <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+        <nav id="nav-menu" class="nav__menu" aria-label="Main">
+          <a href="#about">About</a>
+          <a href="#work">Work</a>
+          <a href="#experience">Experience</a>
+          <a href="#skills">Skills</a>
+          <a href="#pipeline">This site</a>
+          <a href="#contact">Contact</a>
+          <button class="theme" type="button" aria-label="Toggle dark mode">◐</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section id="top" class="hero">
+        <div class="container hero__grid">
+          <div>
+            <p class="eyebrow">DevOps / Platform Engineer · AWS · Kubernetes · Terraform</p>
+            <h1>I build and run cloud platforms that are secure, cheap to run, and quick to ship on.</h1>
+            <p class="lead">
+              I started as a full-stack developer, so I understand both the developers and the infrastructure. For the
+              last two years I led the AWS platform for a HIPAA-regulated US healthcare SaaS: about 20 microservices on
+              EKS across 3 AWS accounts, all managed as code.
+            </p>
+            <div class="cta">
+              <a class="btn btn--primary" href="#contact">Get in touch</a>
+              <!-- TODO(Hasan): add site/assets/cv.pdf -->
+              <a class="btn" href="/assets/cv.pdf" download>Download CV</a>
+            </div>
+            <p class="badge-line">
+              <span class="dot" aria-hidden="true"></span> Open to remote roles · AWS Certified Solutions Architect –
+              Associate
+            </p>
+          </div>
+          <!-- TODO(Hasan): replace with site/assets/photo.jpg -->
+          <div class="placeholder placeholder--photo" aria-hidden="true">
+            <span>Photo</span>
+          </div>
+        </div>
+
+        <div class="container stats">
+          <div class="stat"><strong>~$8.7k/yr</strong><span>EKS compute cost cut, zero downtime</span></div>
+          <div class="stat"><strong>~37/mo</strong><span>production deploys via GitOps</span></div>
+          <div class="stat"><strong>6–8 min</strong><span>from push to production</span></div>
+          <div class="stat"><strong>0</strong><span>stored AWS keys in CI (19 repos on OIDC)</span></div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section">
+        <div class="container narrow">
+          <h2>About</h2>
+          <p>
+            I've worked across <strong>edtech, fintech and US healthcare</strong>: each step more regulated and more
+            sensitive with data. I started out building features end-to-end in Spring Boot and Angular, then took over
+            deployments, then whole platforms.
+          </p>
+          <p>
+            When I joined the healthcare project I had almost no cloud or Kubernetes experience. Two specialists had
+            been stuck on the first deployment for two weeks; I got it running in two days. After that I learned the
+            platform deeply, earned my AWS certification, and took it over end-to-end when the lead consultant left.
+          </p>
+          <p>
+            What I'm best at is <strong>closing gaps</strong>: between developers and infrastructure, between what a
+            client needs and what's technically right, and between "it works" and "it's secure and cheap to run".
+          </p>
+        </div>
+      </section>
+
+      <!-- WORK / CASE STUDIES -->
+      <section id="work" class="section section--alt">
+        <div class="container">
+          <h2>Selected work</h2>
+          <p class="section__intro">Real problems from production, what I did, and what changed.</p>
+          <div class="cards">
+            <article class="card">
+              <p class="card__tag">Security · CI/CD</p>
+              <h3>Removing stored cloud keys from CI</h3>
+              <p>
+                Revoking one key broke production builds for 14 services at once. Instead of a quick fix with a new
+                service user, I moved all 19 repos to <strong>GitLab OIDC</strong> with least-privilege roles built from
+                what the pipelines actually call. All 3 AWS accounts were fixed the same day.
+              </p>
+              <p class="card__result">Result: no stored AWS keys in CI; deploys restored across all environments.</p>
+            </article>
+
+            <article class="card">
+              <p class="card__tag">Cost · Kubernetes</p>
+              <h3>Cutting EKS cost by ~$8.7k/year</h3>
+              <p>
+                Pods reserved ~50× more CPU than they used, so clusters looked "full" and rolling deploys got stuck for
+                hours. I right-sized requests (500m → 100m) and consolidated nodes with blue-green migrations.
+              </p>
+              <p class="card__result">Result: 18 → 11 nodes, ~56% less vCPU, zero downtime, production HA kept.</p>
+            </article>
+
+            <article class="card">
+              <p class="card__tag">Security · Backend</p>
+              <h3>Passwordless database access for 12 services</h3>
+              <p>
+                Spring's reactive database driver (R2DBC) has no IAM support, so I built a pattern that issues a fresh
+                short-lived token for each connection. I shipped the infra changes first, switched off, then rolled out
+                one service at a time.
+              </p>
+              <p class="card__result">
+                Result: no DB passwords in config, 0 restarts during rollout, full TLS verification.
+              </p>
+            </article>
+
+            <article class="card">
+              <p class="card__tag">Platform · Upgrades</p>
+              <h3>Production EKS 1.31 → 1.36</h3>
+              <p>
+                Five versions in a row, together with a blue-green move to Amazon Linux 2023 nodes, managed add-ons, and
+                pinned versions to stop silent drift. Dev and staging went first.
+              </p>
+              <p class="card__result">
+                Result: supported versions everywhere, and a ~$365/mo extended-support fee removed.
+              </p>
+            </article>
+
+            <article class="card">
+              <p class="card__tag">Infrastructure as Code</p>
+              <h3>An isolated demo environment in one day</h3>
+              <p>
+                About 175 resources across 6 new Terraform modules. I checked capacity first (it wouldn't have fit),
+                added a dedicated node group, and proved isolation from dev with negative tests.
+              </p>
+              <p class="card__result">Result: 22 of 22 services running on day one; dev untouched.</p>
+            </article>
+
+            <article class="card">
+              <p class="card__tag">Secrets</p>
+              <h3>Secrets out of git, into Vault</h3>
+              <p>
+                HashiCorp Vault with KMS auto-unseal, dynamic database credentials, and delivery through the Vault
+                Secrets Operator. The 3-replica HA cluster was migrated to new nodes with no downtime.
+              </p>
+              <p class="card__result">Result: rotating DB credentials; plaintext secrets removed from the repo.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPERIENCE -->
+      <section id="experience" class="section">
+        <div class="container narrow">
+          <h2>Experience</h2>
+          <ol class="timeline">
+            <li>
+              <p class="timeline__when">Oct 2024 – Oct 2026</p>
+              <h3>Engineer Lead, DevOps / Platform · PrimeFocus Health (US healthcare SaaS)</h3>
+              <p class="timeline__org">via Celloscope Ltd.</p>
+              <p>
+                Led the AWS platform end-to-end: EKS, Terraform/Terragrunt, Vault, GitOps CI/CD, compliance (HIPAA, ISO
+                27001, GDPR, CCPA). The client started with no engineering team; we ran everything until they built
+                their own, then handed it over as planned.
+              </p>
+            </li>
+            <li>
+              <p class="timeline__when">Feb – Apr 2026</p>
+              <h3>DevOps Engineer · Better Health (digital prescription platform)</h3>
+              <p class="timeline__org">Celloscope Ltd.</p>
+              <p>
+                Set up deployment from scratch: a Docker Swarm stack of ~20 services plus CI/CD. Then onboarded a junior
+                engineer and handed it over.
+              </p>
+            </li>
+            <li>
+              <p class="timeline__when">2024</p>
+              <h3>Deployment / Platform Engineer · MRA (microfinance, fintech)</h3>
+              <p class="timeline__org">Doer Services → Celloscope Ltd.</p>
+              <p>
+                Owned everything except features: on-premise infrastructure, gateway, Keycloak/OAuth2 auth, logging and
+                tracing, and data migration for ~114 branches.
+              </p>
+            </li>
+            <li>
+              <p class="timeline__when">2022 – 2024</p>
+              <h3>Software Engineer → Team Lead · School management (edtech)</h3>
+              <p class="timeline__org">Doer Services Ltd.</p>
+              <p>Full-stack development (Spring Boot, Angular), then led a 5-developer team.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- SKILLS -->
+      <section id="skills" class="section section--alt">
+        <div class="container">
+          <h2>Skills</h2>
+          <div class="skills">
+            <div>
+              <h3>Cloud (AWS)</h3>
+              <ul class="chips">
+                <li>EKS</li>
+                <li>IAM &amp; OIDC</li>
+                <li>VPC</li>
+                <li>RDS</li>
+                <li>KMS</li>
+                <li>S3</li>
+                <li>CloudFront</li>
+                <li>Cognito</li>
+                <li>Cost management</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Kubernetes</h3>
+              <ul class="chips">
+                <li>Upgrades</li>
+                <li>Right-sizing</li>
+                <li>Blue-green nodes</li>
+                <li>Pod Identity</li>
+                <li>Istio</li>
+                <li>Helm</li>
+              </ul>
+            </div>
+            <div>
+              <h3>IaC &amp; CI/CD</h3>
+              <ul class="chips">
+                <li>Terraform</li>
+                <li>Terragrunt</li>
+                <li>GitLab CI</li>
+                <li>GitHub Actions</li>
+                <li>GitOps</li>
+                <li>Docker</li>
+                <li>Docker Swarm</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Security</h3>
+              <ul class="chips">
+                <li>HashiCorp Vault</li>
+                <li>Least privilege</li>
+                <li>CVE remediation</li>
+                <li>HIPAA · ISO 27001</li>
+                <li>Keycloak / OAuth2</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Observability</h3>
+              <ul class="chips">
+                <li>Prometheus</li>
+                <li>Grafana</li>
+                <li>Loki</li>
+                <li>Alertmanager</li>
+                <li>Graylog</li>
+                <li>Zipkin</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Backend</h3>
+              <ul class="chips">
+                <li>Java</li>
+                <li>Spring Boot</li>
+                <li>Reactive / R2DBC</li>
+                <li>PostgreSQL</li>
+                <li>Bash</li>
+                <li>Python</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW THIS SITE SHIPS -->
+      <section id="pipeline" class="section">
+        <div class="container narrow">
+          <h2>How this site ships</h2>
+          <p>
+            A small site, run like production. Every change goes through the same pipeline: checks on each pull request,
+            a preview deployment, and a production release that is built once, smoke-tested, and only then promoted.
+          </p>
+          <ol class="flow">
+            <li><strong>Pull request</strong><span>format, HTML and link checks</span></li>
+            <li><strong>Preview</strong><span>built once, deployed to a unique URL</span></li>
+            <li><strong>Merge to main</strong><span>production build, not yet live</span></li>
+            <li><strong>Smoke test</strong><span>pages and security headers checked</span></li>
+            <li><strong>Promote</strong><span>the tested build goes live; instant rollback</span></li>
+          </ol>
+          <p class="muted">
+            GitHub Actions · Vercel CLI · strict security headers (CSP, HSTS) ·
+            <a href="https://github.com/nasahemon/portfolio">source on GitHub</a>
+          </p>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section section--alt">
+        <div class="container narrow center">
+          <h2>Contact</h2>
+          <p>Looking for a remote senior DevOps / Platform role. The fastest way to reach me is email.</p>
+          <div class="cta cta--center">
+            <a class="btn btn--primary" href="mailto:hasanemon037@gmail.com">hasanemon037@gmail.com</a>
+            <a class="btn" href="https://www.linkedin.com/in/hasan-emon-33a6721b9" rel="noopener">LinkedIn</a>
+            <a class="btn" href="https://github.com/nasahemon" rel="noopener">GitHub</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>© <span id="year">2026</span> Hasibul Hasan Emon · Dhaka, Bangladesh · Remote</p>
+      </div>
+    </footer>
+  </body>
+</html>

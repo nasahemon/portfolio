@@ -1,0 +1,127 @@
+# CI/CD for the portfolio.
+#   Pull request → checks → preview deployment (URL posted on the PR)
+#   Push to main → checks → production build, deployed but NOT live → smoke test → promote (go live)
+# The artifact is built once per run (`vercel build`) and that exact output is deployed (`--prebuilt`).
+# Vercel's own Git integration is disabled in vercel.json, so this workflow is the only path to production.
+
+name: pipeline
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  checks:
+    name: Checks (format, HTML, links)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Formatting
+        run: npm run format:check
+      - name: HTML validation
+        run: npm run lint:html
+      - name: Shell script lint
+        run: shellcheck scripts/*.sh
+      - name: Internal link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --offline --no-progress --root-dir "${{ github.workspace }}/site" "site/**/*.html"
+          fail: true
+
+  preview:
+    name: Preview deployment
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Pull Vercel settings (preview)
+        run: npx vercel pull --yes --environment=preview --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Build once
+        run: npx vercel build --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Deploy prebuilt output
+        id: deploy
+        run: |
+          url=$(npx vercel deploy --prebuilt --token="${{ secrets.VERCEL_TOKEN }}")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Smoke test preview
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: bash scripts/smoke-test.sh "${{ steps.deploy.outputs.url }}"
+      - name: Comment preview URL on the PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `🔍 Preview deployed and smoke-tested: ${{ steps.deploy.outputs.url }}`
+            })
+
+  release:
+    name: Production release (build → stage → smoke test → promote)
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      # Add required reviewers to this environment in GitHub settings for a manual approval gate.
+      name: production
+      url: https://hasanemon.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Pull Vercel settings (production)
+        run: npx vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Build once (production)
+        run: npx vercel build --prod --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Deploy, but don't go live yet
+        id: stage
+        run: |
+          url=$(npx vercel deploy --prebuilt --prod --skip-domain --token="${{ secrets.VERCEL_TOKEN }}")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Smoke test the staged build
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: bash scripts/smoke-test.sh "${{ steps.stage.outputs.url }}"
+      - name: Promote the tested build to production
+        run: npx vercel promote "${{ steps.stage.outputs.url }}" --yes --token="${{ secrets.VERCEL_TOKEN }}"
+      - name: Verify production
+        run: bash scripts/smoke-test.sh "https://hasanemon.vercel.app"

@@ -1,0 +1,18 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "description": "Personal portfolio of Hasibul Hasan Emon, a static site deployed to Vercel via GitHub Actions.",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:html": "html-validate \"site/**/*.html\"",
+    "check": "npm run format:check && npm run lint:html",
+    "serve": "npx --yes serve site -l 4321",
+    "smoke": "bash scripts/smoke-test.sh"
+  },
+  "devDependencies": {
+    "html-validate": "9.7.1",
+    "prettier": "3.9.10",
+    "vercel": "60.1.3"
+  }
+}
