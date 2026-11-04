@@ -16,7 +16,13 @@ fail() { echo "❌ $*" >&2; exit 1; }
 echo "Smoke testing ${url}"
 
 # 1. Home page is up and is the right page.
-status=$(curl "${curl_args[@]}" -o /tmp/home.html -w '%{http_code}' "${url}/")
+# A new deployment URL can return 404 for a few seconds while it propagates, so wait up to ~60s.
+for _ in $(seq 1 12); do
+  status=$(curl "${curl_args[@]}" -o /tmp/home.html -w '%{http_code}' "${url}/")
+  [[ "$status" == "200" ]] && break
+  echo "… home page returned ${status}, waiting for deployment to be ready"
+  sleep 5
+done
 [[ "$status" == "200" ]] || fail "home page returned ${status}"
 grep -q "Hasibul Hasan Emon" /tmp/home.html || fail "home page content missing"
 echo "✅ home page 200 with expected content"
